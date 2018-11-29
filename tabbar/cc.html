@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<link rel="stylesheet" type="text/css" href="../js/animate.css"/>
+<script src="../js/vue.js" type="text/javascript" charset="utf-8"></script>
+<style type="text/css">
+	p{
+		width:500px;
+		height: 100px;
+		border: 1px solid red;
+	}
+ 
+</style>
+</head>
+<body>
+	
+	<div id="out">
+		
+		<button @click="isshow='v-a'">组件AAA</button>
+		<button @click="isshow='v-b'">组件BBB</button>
+		
+		<transition 
+			enter-active-class="animated rollIn"
+			leave-active-class="animated rotateOutDownRight"
+			>
+				<component :is="isshow"></component>
+ 
+		</transition>
+	</div>
+	
+	
+	
+	<template id="a">
+		<div>
+			<h1>组建AAAAA</h1>
+		</div>
+	</template>
+	
+	<template id="b">
+		<div>
+			<h1>组建BBBBB</h1>
+		</div>
+	</template>
+	
+	
+	
+	
+</body>
+<script type="text/javascript">
+ 
+	var vm=new Vue({
+		el:'#out',
+		data:{
+			isshow:'v-a'
+		},
+		methods:{
+			
+		},
+		components:{
+			'v-a':{
+				template:'#a'
+			},
+			'v-b':{
+				template:'#b'
+			}
+		}
+	})
+	
+//	url地址栏路径  search(?id=ddd)  hash(哈希  #aa)  path(/ddd)
+	
+//	后端路由－－实现接口(不同路径下展示不同数据)
+//	前端路由－－实现视图更换(不同路径下展示不同视图内容)
+	
+	
+</script>
+
+</html>
