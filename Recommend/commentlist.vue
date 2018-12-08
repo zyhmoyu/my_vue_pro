@@ -76,10 +76,6 @@
 		width: 35px;
 		height: 35px;
 		border-radius: 50%;
-		/*vertical-align: middle;*/
-	}
-	.app-comlist .mui-card-content .mui-table-view .mui-media .mui-media-body{
-		/*overflow: visible;*/
 	}
 	.app-comlist .mui-card-content .mui-table-view .mui-media .mui-media-body p.listinfo{
 		font-size: 18px;

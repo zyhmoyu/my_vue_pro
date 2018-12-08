@@ -27,7 +27,7 @@
 					</div>
 				</div>
 				<ul class="mui-table-view mui-grid-view mui-grid-9" v-else-if="item.intype=='img'">
-					<li class="mui-table-view-cell mui-media mui-col-xs-4" v-for="im in imgs" v-if="item.id==im.id">
+					<li class="mui-table-view-cell mui-media mui-col-xs-4" v-for="im in imgs" v-if="item.id==im.id" :key="im.index">
 						<a class="my-a" href="#" >
 							<img :src="im.img" />
 						</a>
@@ -37,7 +37,7 @@
 			<div class="mui-card-footer my-dn">
 				<a><span class="mui-icon mui-icon-redo my-size my-icon" v-text="item.zl"></span></a>
 				<a id="icon-chatbubble"><span class="my-icon my-size mui-icon mui-icon-chatbubble" v-text="item.pl"></span></a>
-				<a><span class="my-icon my-size mui-icon-extra mui-icon-extra-like" v-text="item.likes" @click="liked"></span></a>
+				<a><span class="my-icon my-size mui-icon-extra mui-icon-extra-like" v-text="item.likes" @click="liked(item.likes,item.id)"></span></a>
 			</div>
 		</div>
 		<router-view ref="comlist"></router-view>
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-	import {Toast} from 'mint-ui'
+import {Toast} from "mint-ui"
 	export default {
 		data() {
 			return {
@@ -92,8 +92,35 @@
 				textarea.parentElement.classList.remove("input-onfa-my")
 				blacka.style.height = "0px"
 			},
-			liked(){
-				this.list[0].likes++
+			liked(likes,id){
+				var uid = sessionStorage.getItem("uid")
+				if(uid=="null"){
+					Toast("请登录")
+					return
+				}else{
+					var url = "recommends/liked?uptype=likes&nid="+id+"&uid="+uid
+					this.axios.get(url).then(result=>{
+						if(result.data.code==1){
+							var up = likes+1
+							this.axios.get("recommends/updatelist?update="+up+"&id="+id+"&updatetype=likes").then(res=>{
+								// console.log(res)
+								if(res.data.code==1){
+									Toast("点赞成功")
+									for(var item of this.list){
+										if(item.id == id){
+												item.likes++
+										}
+									}
+								}
+							})
+							// 17645746545
+							// 17643246545
+							// 123456
+						}else{
+							Toast("您已点过赞了")
+						}
+					})
+				}
 			},
 			postcom(){
 				var texta = document.getElementById("textarea")
@@ -105,8 +132,15 @@
 					if(res.body.code==1){
 						Toast("评论成功")
 						texta.value = ""
+						this.comments(nid)
 						this.$refs.comlist.reqcom()
 					}
+				})
+			},
+			comments(nid){
+				var url = "recommends/comments?nid"+nid
+				this.$http.get(url).then(res=>{
+					console.log(res)
 				})
 			}
 		},

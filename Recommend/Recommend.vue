@@ -17,12 +17,12 @@
 			<div class="mui-card-content">
 				<!-- 用if来判断 -->
 				<div v-if="item.intype=='video'">
-					<div v-for="im in imgs" v-if="im.id==item.id" :key="im.mid">
+					<div v-for="im in imgs" v-if="im.id==item.id" :key="im.index">
 						<video :src="im.img" controls></video>
 					</div>
 				</div>
 				<ul class="mui-table-view mui-grid-view mui-grid-9" v-else-if="item.intype=='img'">
-					<li class="mui-table-view-cell mui-media mui-col-xs-4" v-for="im in imgs" v-if="item.id==im.id">
+					<li class="mui-table-view-cell mui-media mui-col-xs-4" v-for="im in imgs" v-if="item.id==im.id" :key="im.index">
 						<a class="my-a" href="#" >
 							<img :src="im.img" />
 						</a>
@@ -32,13 +32,13 @@
 			<div class="mui-card-footer my-dn">
 				<a><span class="mui-icon mui-icon-redo my-size my-icon" v-text="item.zl" @click="zl(item.id)"></span></a>
 				<a id="icon-chatbubble"><span class="my-icon my-size mui-icon mui-icon-chatbubble" v-text="item.pl" @click="jumpinfo(item.id,true)"></span></a>
-				<a><span class="my-icon my-size mui-icon-extra mui-icon-extra-like" v-text="item.likes" @click="updata(item.id)"></span></a>
+				<a><span class="my-icon my-size mui-icon-extra mui-icon-extra-like" v-text="item.likes" @click="updata(item.id,item.likes)"></span></a>
 			</div>
 		</div>
 	</div>
 </template>
 <script>
-	import {Toast} from 'mint-ui'
+	import {Toast} from "mint-ui"
 	export default {
 		data(){
 			return {
@@ -64,23 +64,35 @@
 				}
 				this.$router.push("/Recommend/Recommendinfo?type="+url+"&id="+id+"&foc="+foc)
 			},
-			updata(id){
+			updata(id,likes){
 				var uid = sessionStorage.getItem("uid")
-				var url = "recommends/liked?uptype=likes&nid="+id+"&uid="+uid
-				this.$http.get(url).then(result=>{
-					if(result.body.code==1){
-						for(var item of this.list){
-							if(item.id == id){
-								item.likes++
-								var up = item.likes
-								this.$http.get("recommends/updatelist?update="+up+"&id="+id+"&updatetype=likes").then(res=>{
-								})
-							}
+				if(uid=="null"){
+					Toast("请登录")
+					return
+				}else{
+					var url = "recommends/liked?uptype=likes&nid="+id+"&uid="+uid
+					this.axios.get(url).then(result=>{
+						if(result.data.code==1){
+							var up = likes+1
+							this.axios.get("recommends/updatelist?update="+up+"&id="+id+"&updatetype=likes").then(res=>{
+								// console.log(res)
+								if(res.data.code==1){
+									Toast("点赞成功")
+									for(var item of this.list){
+										if(item.id == id){
+												item.likes++
+										}
+									}
+								}
+							})
+							// 17645746545
+							// 17643246545
+							// 123456
+						}else{
+							Toast("您已点过赞了")
 						}
-					}else{
-						Toast("您已点过赞了")
-					}
-				})
+					})
+				}
 			},
 			zl(id){
 				Toast("此功能未开发出来")
